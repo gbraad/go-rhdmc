@@ -1,0 +1,36 @@
+stages:
+  - build
+  - publish
+
+build:
+  stage: build
+  image: fedora:26
+  script:
+    - dnf install -y go make git
+    - export CURRENT_BUILD_PATH=$PWD
+    - mkdir -p /workspace/src/github.com/gbraad
+    - ln -s $CURRENT_BUILD_PATH /workspace/src/github.com/gbraad/go-rhdmc
+    - cd /workspace/src/github.com/gbraad/go-rhdmc
+    - export GOPATH=/workspace
+    - make
+    - mkdir -p $OLDPWD/public
+    - mv $GOPATH/bin/* $CURRENT_BUILD_PATH/public
+  artifacts:
+    paths:
+      - public
+
+pages:
+  stage: publish
+  image: docker:git
+  script:
+    - echo '<html><body>' > index.html
+    - ls ./public/ | sed 's/^.*/<a href="&">&<\/a><br\/>/' >> index.html
+    - echo '</body></html>' >> index.html
+    - mv index.html ./public/
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
+
+
