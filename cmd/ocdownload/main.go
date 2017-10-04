@@ -46,8 +46,9 @@ func main() {
 
 	if *list {
 		fmt.Println("Suggested versions")
+		fmt.Println("--   version   ---  released  --")
 		for _, v := range versions {
-			fmt.Printf("%s, released: %s", v.value, v.released)
+			fmt.Printf("%s\t| %s \n", v.value, v.released)
 		}
 		os.Exit(0)
 	}
