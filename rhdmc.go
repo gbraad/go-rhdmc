@@ -40,6 +40,7 @@ func Download(username string, password string, filepath string) (string, error)
 	if err != nil {
 		return "", fmt.Errorf("Cannot download binary at '%s': %s", filepath, err.Error())
 	}
+
 	defer func() { _ = resp.Body.Close() }()
 	out, err := os.Create(filename)
 	defer out.Close()
@@ -50,6 +51,6 @@ func Download(username string, password string, filepath string) (string, error)
 	if err != nil {
 		return "", fmt.Errorf("Not able to copy file to '%s': %s", filename, err.Error())
 	}
-	
+
 	return filepath, nil
 }
