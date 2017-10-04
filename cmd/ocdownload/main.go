@@ -85,7 +85,7 @@ func main() {
 
 		os.Exit(0)
 	} else {
-		fmt.Println("FAIL", err.Error())
+		fmt.Printf("FAIL\n%s", err.Error())
 
 		os.Exit(2)
 	}

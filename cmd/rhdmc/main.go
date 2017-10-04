@@ -27,18 +27,18 @@ import (
 func main() {
 	username := flag.String("username", "", "RHD Account username (required)")
 	password := flag.String("password", "", "RHD Account password (required)")
-	filepath := flag.String("filepath", "", "Donwload manager filepath (required)")
+	filename := flag.String("filename", "", "Download manager filename (required)")
 	flag.Parse()
 
-	if *username == "" || *password == "" || *filepath == "" {
+	if *username == "" || *password == "" || *filename == "" {
 		fmt.Println("Missing required information\nUse -h for more information")
 		os.Exit(1)
 	}
 
-	filename, err := rhdmc.Download(*username, *password, *filepath)
+	_, err := rhdmc.Download(*username, *password, *filename)
 
 	if err == nil {
-		fmt.Printf("File has been download as %s\n", filename)
+		fmt.Printf("File has been downloaded\n")
 
 		os.Exit(0)
 	} else {

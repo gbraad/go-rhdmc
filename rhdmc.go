@@ -27,30 +27,32 @@ const (
 	DMURL = "https://developers.redhat.com/download-manager/jdf/file/"
 )
 
-func Download(username string, password string, filepath string) (string, error) {
-	var filename = filepath
-	var url string = fmt.Sprintf("%s%s?workflow=direct", DMURL, filepath)
+func Download(username string, password string, filename string) (bool, error) {
+	var url string = fmt.Sprintf("%s%s?workflow=direct", DMURL, filename)
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return false, fmt.Errorf("Error in request: '%s'", err.Error())
+	}
 	req.SetBasicAuth(username, password)
 	resp, err := client.Do(req)
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("Wrong credentials or file path")
-	}
 	if err != nil {
-		return "", fmt.Errorf("Cannot download binary at '%s': %s", filepath, err.Error())
+		return false, fmt.Errorf("Unable to get resource '%s': %s", filename, err.Error())
+	}
+	if resp.StatusCode != http.StatusOK {
+		return false, fmt.Errorf("Wrong credentials or filename")
 	}
 
 	defer func() { _ = resp.Body.Close() }()
 	out, err := os.Create(filename)
 	defer out.Close()
 	if err != nil {
-		return "", fmt.Errorf("Not able to create file as '%s': %s", filename, err.Error())
+		return false, fmt.Errorf("Not able to create file as '%s': %s", filename, err.Error())
 	}
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("Not able to copy file to '%s': %s", filename, err.Error())
+		return false, fmt.Errorf("Not able to copy file to '%s': %s", filename, err.Error())
 	}
 
-	return filepath, nil
+	return true, nil
 }
